@@ -1,48 +1,49 @@
 version: "3.7"
 services:
   dslist:
-    container_name: dslist
     build:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
-    working_dir: /home/dslist
+    working_dir: /home/dslist/app
+    ports:
+      - 8080:8080
+      - 35729:35729
+      - 5005:5005
     volumes:
-      - ./:/home/dslist
+      - ./:/home/dslist/app
     networks:
       - dev-network
   # ====================================================================================================================
   # POSTGRES SERVER
   # ====================================================================================================================
-  pg-docker:
+  pgsql:
     image: postgres:14-alpine
-    container_name: dev-postgresql
     environment:
       POSTGRES_DB: dslist
       POSTGRES_PASSWORD: 1234567
     ports:
       - 5432:5432
     volumes:
-      - ./.data/postgresql/data:/var/lib/postgresql/data
+      - /home/lucas/.docker/dslist/postgresql/data:/var/lib/postgresql/data
     networks:
       - dev-network
   # ====================================================================================================================
   # PGADMIN
   # ====================================================================================================================
-  pgadmin-docker:
-    image: dpage/pgadmin4
-    container_name: dev-pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: me@example.com
-      PGADMIN_DEFAULT_PASSWORD: 1234567
-    ports:
-      - 5050:80
-    volumes:
-      - ./.data/pgadmin:/var/lib/pgadmin
-    depends_on:
-      - pg-docker
-    networks:
-      - dev-network
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: me@example.com
+  #     PGADMIN_DEFAULT_PASSWORD: 1234567
+  #   ports:
+  #     - 5050:80
+  #   volumes:
+  #     - ../../.data/pgadmin:/var/lib/pgadmin
+  #   depends_on:
+  #     - pgsql
+  #   networks:
+  #     - dev-network
 # ======================================================================================================================
 # REDE
 # ======================================================================================================================
